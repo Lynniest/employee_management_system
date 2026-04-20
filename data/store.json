@@ -1,0 +1,14 @@
+{
+  "session": {
+    "activeUserId": "m1",
+    "activeRole": "manager"
+  },
+  "users": [],
+  "employees": [],
+  "availability": [],
+  "schedules": [],
+  "requests": [],
+  "alerts": [],
+  "forecasts": [],
+  "aiSuggestions": []
+}

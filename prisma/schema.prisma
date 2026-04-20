@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  manager
+  employee
+}
+
+enum RequestType {
+  Leave
+  Swap
+  Availability
+}
+
+enum RequestStatus {
+  Pending
+  Approved
+  Denied
+}
+
+enum ScheduleStatus {
+  Draft
+  Published
+  Archived
+}
+
+enum AvailabilityStatus {
+  Available
+  Preferred
+  Unavailable
+}
+
+model Organization {
+  id            String        @id @default(cuid())
+  name          String
+  slug          String        @unique
+  users         User[]
+  employees     Employee[]
+  skills        Skill[]
+  schedules     Schedule[]
+  requests      Request[]
+  alerts        Alert[]
+  forecasts     Forecast[]
+  aiSuggestions AiSuggestion[]
+  sessions      Session[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model User {
+  id             String         @id @default(cuid())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  email          String
+  passwordHash   String
+  role           UserRole
+  department     String?
+  position       String?
+  preferredShift String?
+  weeklyHours    Int?
+  employee       Employee?
+  managerProfile ManagerProfile?
+  requests       Request[]
+  sessions       Session[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([organizationId, email])
+  @@index([organizationId, role])
+}
+
+model ManagerProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Employee {
+  id             String               @id @default(cuid())
+  organizationId String
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String               @unique
+  user           User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeCode   String?
+  status         String               @default("Active")
+  skills         EmployeeSkill[]
+  availabilities Availability[]
+  assignments    ScheduleAssignment[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@unique([organizationId, employeeCode])
+  @@index([organizationId, status])
+}
+
+model Skill {
+  id             String          @id @default(cuid())
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  employees      EmployeeSkill[]
+  createdAt      DateTime        @default(now())
+
+  @@unique([organizationId, name])
+}
+
+model EmployeeSkill {
+  employeeId String
+  skillId    String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  skill      Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([employeeId, skillId])
+}
+
+model Availability {
+  id         String             @id @default(cuid())
+  employeeId String
+  employee   Employee           @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  day        String
+  status     AvailabilityStatus
+  timeRange  String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@index([employeeId, day])
+}
+
+model Schedule {
+  id             String               @id @default(cuid())
+  organizationId String
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  weekLabel      String
+  status         ScheduleStatus       @default(Draft)
+  fairnessScore  Decimal?             @db.Decimal(4, 2)
+  coverageRate   Decimal?             @db.Decimal(5, 2)
+  assignments    ScheduleAssignment[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([organizationId, weekLabel])
+}
+
+model ScheduleAssignment {
+  id         String   @id @default(cuid())
+  scheduleId String
+  employeeId String
+  day        String
+  shift      String
+  role       String?
+  schedule   Schedule  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([scheduleId, day, shift])
+}
+
+model Request {
+  id             String        @id @default(cuid())
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type           RequestType
+  status         RequestStatus @default(Pending)
+  submittedAt    DateTime      @default(now())
+  reviewedAt     DateTime?
+  details        Json
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId, status])
+  @@index([userId, status])
+}
+
+model Alert {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  detail         String
+  severity       String
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId, createdAt])
+}
+
+model Forecast {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  day            String
+  shift          String
+  requiredStaff  Int
+  predictedDemand Int?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId, day, shift])
+}
+
+model AiSuggestion {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  prompt         String
+  response       String
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId, createdAt])
+}
+
+model Session {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token          String       @unique
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId, userId])
+}

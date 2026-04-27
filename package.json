@@ -1,22 +1,16 @@
 {
-  "name": "employee_management_system",
+  "name": "tapp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+  "dev": "next dev",
+  "build": "prisma generate && next build",
+  "start": "next start",
+  "postinstall": "prisma generate",
+  "lint": "eslint"
   },
   "dependencies": {
-    "@google/genai": "^1.50.1",
-    "@prisma/adapter-pg": "^7.7.0",
-    "@prisma/client": "^7.7.0",
-    "dotenv": "^17.4.2",
     "next": "16.2.4",
-    "openai": "^6.34.0",
-    "pg": "^8.20.0",
-    "prisma": "^7.7.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },

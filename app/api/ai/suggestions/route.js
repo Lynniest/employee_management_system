@@ -3,7 +3,6 @@ export const runtime = "nodejs";
 import { ok, created, parseJson, handleApiError } from "@/lib/api";
 import { requireAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getGeminiClient } from "@/lib/gemini";
 
 function normalize(text) {
   return String(text || "").toLowerCase().trim();
@@ -503,9 +502,15 @@ function buildLocalFallbackResponse(prompt, context) {
 }
 
 async function generateWithGemini(fullPrompt) {
+  if (!process.env.GEMINI_API_KEY) {
+    return null;
+  }
+
+  const { getGeminiClient } = await import("@/lib/gemini");
+  const gemini = getGeminiClient();
+
   const models = ["gemini-2.5-flash", "gemini-2.0-flash"];
   const maxRetries = 3;
-  const gemini = getGeminiClient();
 
   for (const model of models) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -538,7 +543,10 @@ async function generateWithGemini(fullPrompt) {
           message.includes("UNAVAILABLE") ||
           message.includes("high demand");
 
-        if (!overloaded) throw error;
+        if (!overloaded) {
+          return null;
+        }
+
         if (attempt === maxRetries) break;
 
         await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));

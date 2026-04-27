@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 import { ok, fail, parseJson, handleApiError } from "@/lib/api";
 import { requireAuthenticated, requireManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";

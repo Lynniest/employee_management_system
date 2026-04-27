@@ -7,10 +7,6 @@ export const authFeaturePoints = [
     title: 'Controlled employee onboarding',
     text: 'Only managers can create employee accounts and assign starting credentials.',
   },
-  {
-    title: 'Ready for API integration',
-    text: 'These screens can connect to Next.js route handlers, JWT auth, or a backend identity service later.',
-  },
 ];
 
 export const employeeRegistrationOptions = {

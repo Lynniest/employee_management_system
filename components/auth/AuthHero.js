@@ -4,7 +4,7 @@ export default function AuthHero({ eyebrow, title, text, points }) {
       <div className="brand-card auth-brand-card">
         <div className="brand-mark">AI</div>
         <div>
-          <p className="brand-title">Scheduler Pro</p>
+          <p className="brand-title">Shift Sync</p>
           <p className="brand-subtitle">Secure workforce scheduling</p>
         </div>
       </div>

@@ -21,7 +21,7 @@ export default function Sidebar() {
         <div className="brand-card">
           <div className="brand-mark">AI</div>
           <div>
-            <p className="brand-title">Scheduler Pro</p>
+            <p className="brand-title">Shift Sync</p>
             <p className="brand-subtitle">Manager & Employee UI</p>
           </div>
         </div>

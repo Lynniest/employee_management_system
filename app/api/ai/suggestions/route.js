@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 import { ok, created, parseJson, handleApiError } from "@/lib/api";
 import { requireAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { gemini } from "@/lib/gemini";
+import { getGeminiClient } from "@/lib/gemini";
 
 function normalize(text) {
   return String(text || "").toLowerCase().trim();
@@ -509,7 +509,7 @@ async function generateWithGemini(fullPrompt) {
   for (const model of models) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const result = await gemini.models.generateContent({
+        const result = await getGeminiClient.models.generateContent({
           model,
           contents: [
             {

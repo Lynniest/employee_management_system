@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 import { ok, handleApiError } from "@/lib/api";
 import { destroySession, getTokenFromRequest } from "@/lib/auth";
 

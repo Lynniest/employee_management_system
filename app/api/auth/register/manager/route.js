@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 import crypto from "crypto";
 import { created, fail, parseJson, handleApiError } from "@/lib/api";
 import { prisma } from "@/lib/prisma";

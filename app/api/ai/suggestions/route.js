@@ -505,11 +505,12 @@ function buildLocalFallbackResponse(prompt, context) {
 async function generateWithGemini(fullPrompt) {
   const models = ["gemini-2.5-flash", "gemini-2.0-flash"];
   const maxRetries = 3;
+  const gemini = getGeminiClient();
 
   for (const model of models) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const result = await getGeminiClient.models.generateContent({
+        const result = await gemini.models.generateContent({
           model,
           contents: [
             {

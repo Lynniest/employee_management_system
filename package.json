@@ -10,9 +10,7 @@
   "lint": "eslint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "next": "16.2.4",
-=======
     "@google/genai": "^1.50.1",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.8.0",
@@ -20,7 +18,6 @@
     "next": "16.2.4",
     "openai": "^6.34.0",
     "pg": "^8.20.0",
->>>>>>> 25e4fa6 (deploy_package_fix)
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
